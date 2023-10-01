@@ -1,0 +1,48 @@
+body{
+    margin:0 ;
+    overflow-x: hidden;
+}
+#movieDiv{
+    display: flex;
+    flex-direction: column;
+    width: 90vw;
+    margin: auto;
+    row-gap: 1vh;
+    height: 80vh;
+    overflow-y: auto;
+    border: 5px solid gold;
+}
+.movieCard{
+    display: flex;
+    flex-wrap: wrap;
+    border: 1px solid;
+    width: 100%;
+    align-items: center;
+}
+.titleCard{
+    width: 25%;
+    display: block;
+    padding: 5px;
+    text-align: center;
+    text-wrap: wrap;
+}
+
+.posterImage{
+    max-width: 10%;
+}
+.desciptionMovie{
+    max-width:40vw;
+}
+#pageScroll{
+    display: flex;
+    width: 100vw;
+    height: 10vh;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#creditsScroll{
+    display: flex;
+    width: 100%;
+    overflow-x: auto;
+}
