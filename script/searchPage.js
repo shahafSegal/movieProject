@@ -16,8 +16,8 @@ const options = {
 
 
 
-function loadPage(page=1,dayToggle=true){
-    fetch(`https://api.themoviedb.org/3/trending/movie/${dayToggle?'day':'week'}?include_adult=false&page=${page}&language=en-US`, options)
+function loadPage(page=1){
+    fetch(`https://api.themoviedb.org/3/search/movie?query=${currentSearch}&include_adult=false&language=en-US&page=${page}`, options)
         .then(response => response.json())
         .then(response => {
                 if(response.status_code)
@@ -27,7 +27,7 @@ function loadPage(page=1,dayToggle=true){
                 }
                 else
                 {
-                    changeMoviePage(response,dayToggle)
+                    changeMoviePage(response)
                 }
             })
         .catch(err => console.error(err)); 
@@ -36,52 +36,44 @@ function loadPage(page=1,dayToggle=true){
 
 
 
-function changeMoviePage(responseData,dayToggle){
+function changeMoviePage(responseData){
     moviePageElem.scrollTop=0
     const moviesArr=responseData.results;
     moviePageElem.innerHTML=moviesArr.map((movieObj,movieIndex)=>{
         return movieToHtml(movieObj,getNumberInTotal(responseData.page)+movieIndex+1)
     }).join('')
 
-    createPagination(responseData,dayToggle)
+    createPagination(responseData)
 }
 
 
-function createPagination(data,dayToggle){
+function createPagination(data){
 
     const pageInputGroup=getTextInTagWithAtt('div','class="form-floating"',
         getTextInTagWithAtt('input',`type="number" class="form-control" id='pageInput' value="${data.page}" onchange="switchPageNumber(Number(this.value))"`)+
-        '<label for="pageInput">enter page(1-500)</label>'
+        `<label for="pageInput">enter page(1-${Math.min(500,data.total_pages)})</label>`
     )
 
     const changePageControls=getTextInTagWithAtt('div','class="input-group align-self-start w-25 "',
         getTextInTagWithAtt('button',`class="bi btn btn-primary bi-chevron-left " ${data.page==1?'disabled':'onclick="switchPageNumberBy1(false)"'} id="pageLeft"`)+
         pageInputGroup+
-        getTextInTagWithAtt('button',`class="bi btn btn-primary bi-chevron-right " ${data.page>=500?'disabled':'onclick="switchPageNumberBy1(true)"'} id="pageRight"`)
+        getTextInTagWithAtt('button',`class="bi btn btn-primary bi-chevron-right " ${data.page>=Math.min(500,data.total_pages)?'disabled':'onclick="switchPageNumberBy1(true)"'} id="pageRight"`)
     )
 
 
-    const toggleElem=  `<div class="d-flex column-gap-3 align-self-top">
-        <label class="form-check-label" >this week</label>
-        <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" role="switch" id="timeControl" ${dayToggle?`checked`:``}
-        onchange='loadPage(pageInput.value,this.checked)'>
-        </div>
-        <label class="form-check-label">today</label>
-    </div>`
     
-    pageScrollElem.innerHTML= getTextInTag('p',`results: ${getNumberInTotal(data.page)+1}-${getNumberInTotal(data.page+1)} `)+
-    getTextInTag('p',`possible results: ${10000}`)+
-    getTextInTag('p',`total pages: ${500}`)+
-    changePageControls+
-    toggleElem
+    pageScrollElem.innerHTML= getTextInTag('p',`results: ${getNumberInTotal(data.page)+1}-${Math.min(getNumberInTotal(data.page+1),data.total_results)} `)+
+    getTextInTag('p',`possible results: ${Math.min(10000,data.total_results)}`)+
+    getTextInTag('p',`total pages: ${Math.min(500,data.total_pages)}`)+
+    changePageControls
 }
+
 function switchPageNumberBy1(negPosBool){
     switchPageNumber(Number(document.getElementById('pageInput').value)+(negPosBool?1:-1))
 }
 
 function switchPageNumber(newPageNumber){
-    loadPage(newPageNumber,document.getElementById('timeControl').checked)
+    loadPage(newPageNumber)
 }
 
 function getNumberInTotal(numberOfPage){
@@ -95,60 +87,23 @@ function movieToHtml(movieObj,movieNumber){
             getTextInTag('div', translateGenreArr(movieObj.genre_ids))
     );
     const singlePageButton= getTextInTagWithAtt('button',`onclick=singlePageDirect(${movieObj.id})`,'More Info')
-    const favouriteButton=getFavouriteButton(movieObj.id)
 
     let content= getTextInTagWithAtt('img',`src="${imagePath+movieObj.poster_path}" class='posterImage'`)+
     mainTitleBox+
     getTextInTagWithAtt('div','class="desciptionMovie"',movieObj.overview)
-    +singlePageButton
-    +favouriteButton;
+    +singlePageButton;
 
     return getTextInTagWithAtt('div','class="movieCard"',content)
 
 }
 
-//favourite
-
-function getFavouritesArr(){
-    return JSON.parse(localStorage.favourites);
-}
-function setFavouritesArr(newFavArr){
-    localStorage.favourites=JSON.stringify(newFavArr)
-}
-
-function getFavouriteButton(movieId){
-    return getTextInTagWithAtt('button',`onclick='changeFavourite(this,${movieId})'`,getFavouriteIcon(movieId) )
-}
-function getFavouriteIcon(movieId){
-    return getFavouriteStatus(movieId)?'<i class="bi bi-heart-fill"></i>':'<i class="bi bi-heart"></i>'
-}
-
-function getFavouriteStatus(movieId){
-    return getFavouritesArr().includes(movieId)
-}
-
-function changeFavourite(favBtnElem,movieID){
-    if (getFavouriteStatus(movieID)){
-        setFavouritesArr(getFavouritesArr().filter((favId)=>{return movieID!=favId}))
-    }
-    else{
-        const favArr= getFavouritesArr()
-        favArr.push(movieID)
-        setFavouritesArr(favArr)
-    }
-    favBtnElem.innerHTML=getFavouriteIcon(movieID)
-}
-
-
-
-//page redirect(moviePage)
 function singlePageDirect(movieId){
     localStorage.movieID=movieId;
     localStorage.enterLastPage=true;
-    location.href='./pages/moviePage.html'
+    location.href='../pages/moviePage.html'
 
 }
-//genre
+
 function translateGenreArr(genreIdArr){
     const tagAttr= 'type="button" class="btn btn-warning mt-3 btn-sm disabled"'
 
@@ -160,10 +115,24 @@ function genreToName(genreId){
     return genreName?genreName.name:"error";
 }
 
+function userSearch(){
+    currentSearch=movieInput.value
+    loadPage()
+}
+
+function initialEnter(){
+    moviePageElem.innerHTML=`<article style='text-align:center;'> <h1> welcome movie searching</h1> 
+        <h2>search bar at the top left</h2> </article>`
+}
+
+
 //run on start
 const imagePath='https://image.tmdb.org/t/p/original'
 const moviePageElem= document.getElementById('movieDiv')
 const pageScrollElem=document.getElementById('pageScroll')
+const movieInput=document.querySelector('#movieSearch')
+const searchBtn=document.querySelector('#search-addon')
+
 
 let movieGenresArr=[];
 
@@ -174,8 +143,10 @@ fetch('https://api.themoviedb.org/3/genre/movie/list?language=en', options)
         })
     .catch(err => console.error(err));
 ;
-if (!(localStorage.favourites && Array.isArray(getFavouritesArr()))){
-    setFavouritesArr([])
-}
 
-setTimeout(loadPage,500)
+let currentSearch='';
+
+initialEnter()
+
+searchBtn.addEventListener('click',userSearch)
+movieInput.addEventListener('keyup',(eve)=>{ if(eve.keyCode === 13) {userSearch()} })

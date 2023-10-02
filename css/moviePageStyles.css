@@ -32,6 +32,8 @@ body{
 }
 .desciptionMovie{
     max-width:40vw;
+    max-height: 20vh;
+    overflow-y: auto;
 }
 #pageScroll{
     display: flex;
@@ -45,4 +47,15 @@ body{
     display: flex;
     width: 100%;
     overflow-x: auto;
+    border: 3px solid green;
+}
+
+.personCard{
+    min-width: 10%;
+    width: 10%;
+}
+
+.personImage{
+    max-width: 100%;
+
 }

@@ -21,8 +21,15 @@ function loadPage(movieId){
     fetch(`https://api.themoviedb.org/3/movie/${movieId}?append_to_response=credits&language=en-US'`, options)
         .then(response => response.json())
         .then(response => {
-                console.log(response)
-                changeMoviePage(response)
+                if(response.status_code)
+                {
+                    moviePageElem.innerHTML=`<div class='d-flex align-items-center'><img src='../assets/error_icon.png' style="max-width:50%;">`+
+                    `<h1 style="color:red;">${response.status_message}</h1> </div>`
+                }
+                else
+                {
+                    changeMoviePage(response)
+                }
             })
         .catch(err => console.error(err)); 
     ;
@@ -31,13 +38,16 @@ function loadPage(movieId){
 
 function changeMoviePage(responseData){
     moviePageElem.innerHTML=movieToHtml(responseData);
+    localStorage.movieID=responseData.id;
+    localStorage.enterLastPage=true
 
 
 }
 
 function movieToHtml(movieObj){
+
     let mainTitleBox =getTextInTagWithAtt('div','class="titleCard"', 
-            getTextInTag('h3',`${movieObj.original_title}`)+
+            getTextInTag('h3',`${movieObj.title}`)+
             getTextInTag('div', translateGenreArr(movieObj.genres))
         )
 
@@ -70,7 +80,7 @@ function listOfActors(creditsPart){
 
 function getPersonCard(singlePerson){
     return getTextInTagWithAtt('div',"class='personCard'",
-        getTextInTagWithAtt('img',`src="${imagePath+singlePerson.profile_path}" class='posterImage'`)+
+        getTextInTagWithAtt('img',`src="${imagePath+singlePerson.profile_path}" class='personImage'`)+
         getTextInTag('p',`person: ${singlePerson.name}`)+
         getTextInTag('p',`character: ${getShortened(singlePerson.character,25)}`)
     )
@@ -86,7 +96,26 @@ function getShortened(anyStr,maxLength){
     return anyStr
 }
 
+function userSearch(){
+    loadPage(movieInput.value)
+}
+
+function initialEnter(){
+    if (localStorage.enterLastPage){
+        loadPage(localStorage.movieID)
+    }
+    else{
+        moviePageElem.innerHTML=`<article style='text-align:center;'> <h1> welcome to single movie search</h1> 
+        <h2>search bar at the top left</h2> </article>`
+    }
+}
+
 const imagePath='https://image.tmdb.org/t/p/original'
 const moviePageElem= document.getElementById('movieDiv')
+const movieInput=document.querySelector('#movieSearch')
+const searchBtn=document.querySelector('#search-addon')
 
-loadPage(600)
+initialEnter()
+
+searchBtn.addEventListener('click',userSearch)
+movieInput.addEventListener('keyup',(eve)=>{ if(eve.keyCode === 13) {userSearch()} })
