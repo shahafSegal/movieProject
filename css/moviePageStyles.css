@@ -20,6 +20,11 @@ body{
     column-gap: 5px;
     align-items: center;
 }
+
+.titleCard,.posterImage,.desciptionMovie{
+    max-height: 20vh;
+}
+
 .titleCard{
     width: 25%;
     display: block;
@@ -29,19 +34,42 @@ body{
 }
 
 .posterImage{
-    max-width: 10%;
+    max-width: 10vw;
 }
 .desciptionMovie{
     max-width:40vw;
-    max-height: 20vh;
     overflow-y: auto;
 }
+
 #pageScroll{
     display: flex;
-    width: 100vw;
-    height: 10vh;
+    column-gap: 5px;
+    width: 90vw;
+    height: 8vh;
     justify-content: space-around;
-    align-items: center;
+    align-items: start;
+    margin: auto;
+    flex-wrap: wrap;
+}
+
+#changePageDiv{
+    width: 25%;
+}
+
+
+@media screen and (max-width: 992px) {
+    #changePageDiv,#timeControlDiv{
+        order: -1;
+        width: 48%;
+    }
+    .titleCard{
+        width: 35%;
+       
+    }
+    .titleCard h3{
+        font-size: 100%;
+    }
+    
 }
 
 #creditsScroll{

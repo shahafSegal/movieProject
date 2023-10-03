@@ -7,21 +7,18 @@ function getTextInTag(strTag, strText=""){
 
 
 export function getPagination(currentPage,totalPages){
-    const pageInputGroup=getTextInTagWithAtt('div','class="form-floating"',
-        getTextInTagWithAtt('input',`type="number" class="form-control" id='pageInput' value="${currentPage}" `)+
-        `<label for="pageInput">enter page(1-${Math.min(500,totalPages)})</label>`
-    )
+    const pageInputGroup=getTextInTagWithAtt('input',`type="number" class="form-control h-100 p-0" id='pageInput' value="${currentPage}" `)
 
-    const changePageControls=getTextInTagWithAtt('div','class="input-group align-self-start w-25 "',
-        getTextInTagWithAtt('button',`class="bi btn btn-primary bi-chevron-left "  id="pageLeft"`)+
+    const changePageControls=getTextInTagWithAtt('div','id="changePageDiv" class="input-group align-self-start h-50 "',
+        getTextInTagWithAtt('button',`class="bi btn btn-primary bi-chevron-left h-100"  id="pageLeft"`)+
         pageInputGroup+
-        getTextInTagWithAtt('button',`class="bi btn btn-primary bi-chevron-right "  id="pageRight"`)
+        getTextInTagWithAtt('button',`class="bi btn btn-primary bi-chevron-right h-100"  id="pageRight"`)
     )
     return changePageControls
 }
 
 export function getTimeControl(dayToggle){
-    return `<div class="d-flex column-gap-3 align-self-top">
+    return `<div id='timeControlDiv' class="d-flex column-gap-3 justify-content-center">
         <label class="form-check-label" >this week</label>
         <div class="form-check form-switch">
         <input class="form-check-input" type="checkbox" role="switch" id="timeControl" ${dayToggle?`checked`:``}>
