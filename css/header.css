@@ -1,0 +1,19 @@
+.headCont{
+    display: grid;
+    width: 100vw;
+    grid-template-rows: auto ;
+    grid-template-columns: 33.33% 33.33% 33.33% ;
+    align-items: center;
+    justify-items: center
+}
+
+.siteSymbol{
+    max-height: 8vh;
+    max-width: 40%;
+}
+
+
+#header-paragraph{
+    margin: 0;
+    font-size: 4vmin;
+}

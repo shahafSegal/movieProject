@@ -88,7 +88,7 @@ function userSearch(){
 }
 
 function initialEnter(){
-    if (localStorage.enterLastPage){
+    if (localStorage.enterLastPage==='true'){
         loadPage(localStorage.movieID)
     }
     else{
