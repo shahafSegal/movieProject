@@ -1,3 +1,6 @@
+import {getFavouritesArr,setFavouritesArr,getFavouriteButton,changeFavourite,checkFavArrExists} from "./favouritesExtend.js";
+
+
 //general
 function getTextInTag(strTag, strText=""){
     return `<${strTag}>${strText}</${strTag}>`
@@ -18,7 +21,7 @@ const options = {
 
 
 function loadPage(){
-    if (localStorage.favourites && Array.isArray(getFavouritesArr()&&getFavouritesArr().length>0)){
+    if (checkFavArrExists()&&getFavouritesArr().length>0){
         moviePageElem.innerHTML='';
         JSON.parse(localStorage.favourites).forEach((movieId)=>{
             
@@ -74,36 +77,8 @@ function movieToHtml(movieObj){
     return getTextInTagWithAtt('div','class="movieCard"',content)
 
 }
+//favourite
 
-function getFavouritesArr(){
-    return JSON.parse(localStorage.favourites);
-}
-function setFavouritesArr(newFavArr){
-    localStorage.favourites=JSON.stringify(newFavArr)
-}
-
-function getFavouriteButton(movieId){
-    return getTextInTagWithAtt('button',`onclick='changeFavourite(this,${movieId})'`,getFavouriteIcon(movieId) )
-}
-function getFavouriteIcon(movieId){
-    return getFavouriteStatus(movieId)?'<i class="bi bi-heart-fill"></i>':'<i class="bi bi-heart"></i>'
-}
-
-function getFavouriteStatus(movieId){
-    return getFavouritesArr().includes(movieId)
-}
-
-function changeFavourite(favBtnElem,movieID){
-    if (getFavouriteStatus(movieID)){
-        setFavouritesArr(getFavouritesArr().filter((favId)=>{return movieID!=favId}))
-    }
-    else{
-        const favArr= getFavouritesArr()
-        favArr.push(movieID)
-        setFavouritesArr(favArr)
-    }
-    favBtnElem.innerHTML=getFavouriteIcon(movieID)
-}
 
 function singlePageDirect(movieId){
     localStorage.movieID=movieId;
@@ -147,7 +122,8 @@ function getShortened(anyStr,maxLength){
 const imagePath='https://image.tmdb.org/t/p/original'
 const moviePageElem= document.getElementById('movieDiv')
 
-
+window.changeFavourite = changeFavourite;
+window.singlePageDirect=singlePageDirect;
 
 
 loadPage()

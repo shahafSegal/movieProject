@@ -1,20 +1,5 @@
-//general
-function getTextInTag(strTag, strText=""){
-    return `<${strTag}>${strText}</${strTag}>`
-}
-function getTextInTagWithAtt(strTag, strAtt ,strText=""){
-    return `<${strTag} ${strAtt}>${strText}</${strTag}>`
-}
-
-
-const options = {
-    method: 'GET',
-    headers: {
-      accept: 'application/json',
-      Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3OWUwMjZiMGZmZjJhNjA3Y2U1YzA0OGUxNDgzMjIwZiIsInN1YiI6IjY1MTU5ZTFhY2FkYjZiMDJiZTU1MzA3MyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.pLCPrgWg37LKt0nC_uSuPHGVj6-OYUuK2ixkzYegpD4'
-    }
-};
-
+import {setFavouritesArr,getFavouriteButton,changeFavourite,checkFavArrExists} from "./favouritesExtend.js";
+import{getTextInTag,getTextInTagWithAtt,options}from "./general.js"
 
 
 function loadPage(movieId){
@@ -49,18 +34,20 @@ function movieToHtml(movieObj){
     let mainTitleBox =getTextInTagWithAtt('div','class="titleCard"', 
             getTextInTag('h3',`${movieObj.title}`)+
             getTextInTag('div', translateGenreArr(movieObj.genres))
-        )
+    );
+
+    const favouriteButton=getFavouriteButton(movieObj.id)
 
     let content= getTextInTagWithAtt('img',`src="${imagePath+movieObj.poster_path}" class='posterImage'`)+
     mainTitleBox+
-    getTextInTagWithAtt('div','class="desciptionMovie"',movieObj.overview);
+    getTextInTagWithAtt('div','class="desciptionMovie"',movieObj.overview)+
+    favouriteButton;
 
     content+=listOfActors(movieObj.credits.cast)
 
     return getTextInTagWithAtt('div','class="movieCard"',content)
 
 }
-
 
 
 function translateGenreArr(genreArr){
@@ -114,6 +101,13 @@ const imagePath='https://image.tmdb.org/t/p/original'
 const moviePageElem= document.getElementById('movieDiv')
 const movieInput=document.querySelector('#movieSearch')
 const searchBtn=document.querySelector('#search-addon')
+
+
+window.changeFavourite = changeFavourite;
+
+if (!(checkFavArrExists())){
+    setFavouritesArr([])
+}
 
 initialEnter()
 

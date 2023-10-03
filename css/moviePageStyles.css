@@ -17,6 +17,7 @@ body{
     flex-wrap: wrap;
     border: 1px solid;
     width: 100%;
+    column-gap: 5px;
     align-items: center;
 }
 .titleCard{

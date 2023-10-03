@@ -1,19 +1,6 @@
-//general
-function getTextInTag(strTag, strText=""){
-    return `<${strTag}>${strText}</${strTag}>`
-}
-function getTextInTagWithAtt(strTag, strAtt ,strText=""){
-    return `<${strTag} ${strAtt}>${strText}</${strTag}>`
-}
-
-const options = {
-    method: 'GET',
-    headers: {
-      accept: 'application/json',
-      Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3OWUwMjZiMGZmZjJhNjA3Y2U1YzA0OGUxNDgzMjIwZiIsInN1YiI6IjY1MTU5ZTFhY2FkYjZiMDJiZTU1MzA3MyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.pLCPrgWg37LKt0nC_uSuPHGVj6-OYUuK2ixkzYegpD4'
-    }
-};
-
+import { getNumberInTotal, getPageData, getPagination, getTimeControl } from "./bottomBarUtil.js";
+import {setFavouritesArr,getFavouriteButton,changeFavourite,checkFavArrExists} from "./favouritesExtend.js";
+import{getTextInTag,getTextInTagWithAtt,options}from "./general.js"
 
 
 function loadPage(page=1,dayToggle=true){
@@ -49,45 +36,49 @@ function changeMoviePage(responseData,dayToggle){
 
 function createPagination(data,dayToggle){
 
-    const pageInputGroup=getTextInTagWithAtt('div','class="form-floating"',
-        getTextInTagWithAtt('input',`type="number" class="form-control" id='pageInput' value="${data.page}" onchange="switchPageNumber(Number(this.value))"`)+
-        '<label for="pageInput">enter page(1-500)</label>'
-    )
+    const changePageControls=getPagination(data.page,data.total_pages)
 
-    const changePageControls=getTextInTagWithAtt('div','class="input-group align-self-start w-25 "',
-        getTextInTagWithAtt('button',`class="bi btn btn-primary bi-chevron-left " ${data.page==1?'disabled':'onclick="switchPageNumberBy1(false)"'} id="pageLeft"`)+
-        pageInputGroup+
-        getTextInTagWithAtt('button',`class="bi btn btn-primary bi-chevron-right " ${data.page>=500?'disabled':'onclick="switchPageNumberBy1(true)"'} id="pageRight"`)
-    )
-
-
-    const toggleElem=  `<div class="d-flex column-gap-3 align-self-top">
-        <label class="form-check-label" >this week</label>
-        <div class="form-check form-switch">
-        <input class="form-check-input" type="checkbox" role="switch" id="timeControl" ${dayToggle?`checked`:``}
-        onchange='loadPage(pageInput.value,this.checked)'>
-        </div>
-        <label class="form-check-label">today</label>
-    </div>`
+    const toggleElem= getTimeControl(dayToggle)
     
-    pageScrollElem.innerHTML= getTextInTag('p',`results: ${getNumberInTotal(data.page)+1}-${getNumberInTotal(data.page+1)} `)+
-    getTextInTag('p',`possible results: ${10000}`)+
-    getTextInTag('p',`total pages: ${500}`)+
+    pageScrollElem.innerHTML= getPageData(data.page,data.total_results,data.total_pages)+
     changePageControls+
     toggleElem
+
+    eventsToPagination(data)
+
+    document.getElementById('timeControl').addEventListener('change',switchPageNumberToInput)
+    
 }
+//bottomBar
+
+function eventsToPagination(data){
+    document.getElementById('pageInput').addEventListener('change',switchPageNumberToInput)
+    if(data.page>=500){
+        document.getElementById('pageRight').disabled=true
+    }
+    else{
+        document.getElementById('pageRight').addEventListener('click',()=>{switchPageNumberBy1(true)})
+    }
+    if(data.page==1){
+        document.getElementById('pageLeft').disabled=true
+    }
+    else{
+        document.getElementById('pageLeft').addEventListener('click',()=>{switchPageNumberBy1(false)})
+    }
+}
+
 function switchPageNumberBy1(negPosBool){
     switchPageNumber(Number(document.getElementById('pageInput').value)+(negPosBool?1:-1))
+}
+function switchPageNumberToInput(){
+    switchPageNumber(document.getElementById('pageInput').value)
 }
 
 function switchPageNumber(newPageNumber){
     loadPage(newPageNumber,document.getElementById('timeControl').checked)
 }
 
-function getNumberInTotal(numberOfPage){
-    return 20*(numberOfPage-1);
-}
-
+//<------------------------------------------------------------->
 
 function movieToHtml(movieObj,movieNumber){
     const mainTitleBox =getTextInTagWithAtt('div','class="titleCard"', 
@@ -106,39 +97,6 @@ function movieToHtml(movieObj,movieNumber){
     return getTextInTagWithAtt('div','class="movieCard"',content)
 
 }
-
-//favourite
-
-function getFavouritesArr(){
-    return JSON.parse(localStorage.favourites);
-}
-function setFavouritesArr(newFavArr){
-    localStorage.favourites=JSON.stringify(newFavArr)
-}
-
-function getFavouriteButton(movieId){
-    return getTextInTagWithAtt('button',`onclick='changeFavourite(this,${movieId})'`,getFavouriteIcon(movieId) )
-}
-function getFavouriteIcon(movieId){
-    return getFavouriteStatus(movieId)?'<i class="bi bi-heart-fill"></i>':'<i class="bi bi-heart"></i>'
-}
-
-function getFavouriteStatus(movieId){
-    return getFavouritesArr().includes(movieId)
-}
-
-function changeFavourite(favBtnElem,movieID){
-    if (getFavouriteStatus(movieID)){
-        setFavouritesArr(getFavouritesArr().filter((favId)=>{return movieID!=favId}))
-    }
-    else{
-        const favArr= getFavouritesArr()
-        favArr.push(movieID)
-        setFavouritesArr(favArr)
-    }
-    favBtnElem.innerHTML=getFavouriteIcon(movieID)
-}
-
 
 
 //page redirect(moviePage)
@@ -165,6 +123,10 @@ const imagePath='https://image.tmdb.org/t/p/original'
 const moviePageElem= document.getElementById('movieDiv')
 const pageScrollElem=document.getElementById('pageScroll')
 
+
+window.changeFavourite = changeFavourite;
+window.singlePageDirect=singlePageDirect;
+
 let movieGenresArr=[];
 
 fetch('https://api.themoviedb.org/3/genre/movie/list?language=en', options)
@@ -174,7 +136,7 @@ fetch('https://api.themoviedb.org/3/genre/movie/list?language=en', options)
         })
     .catch(err => console.error(err));
 ;
-if (!(localStorage.favourites && Array.isArray(getFavouritesArr()))){
+if (!(checkFavArrExists())){
     setFavouritesArr([])
 }
 

@@ -1,18 +1,7 @@
 //general
-function getTextInTag(strTag, strText=""){
-    return `<${strTag}>${strText}</${strTag}>`
-}
-function getTextInTagWithAtt(strTag, strAtt ,strText=""){
-    return `<${strTag} ${strAtt}>${strText}</${strTag}>`
-}
-
-const options = {
-    method: 'GET',
-    headers: {
-      accept: 'application/json',
-      Authorization: 'Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI3OWUwMjZiMGZmZjJhNjA3Y2U1YzA0OGUxNDgzMjIwZiIsInN1YiI6IjY1MTU5ZTFhY2FkYjZiMDJiZTU1MzA3MyIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.pLCPrgWg37LKt0nC_uSuPHGVj6-OYUuK2ixkzYegpD4'
-    }
-};
+import { getNumberInTotal, getPageData, getPagination } from "./bottomBarUtil.js";
+import {setFavouritesArr,getFavouriteButton,changeFavourite,checkFavArrExists} from "./favouritesExtend.js";
+import{getTextInTag,getTextInTagWithAtt,options}from "./general.js"
 
 
 
@@ -49,35 +38,42 @@ function changeMoviePage(responseData){
 
 function createPagination(data){
 
-    const pageInputGroup=getTextInTagWithAtt('div','class="form-floating"',
-        getTextInTagWithAtt('input',`type="number" class="form-control" id='pageInput' value="${data.page}" onchange="switchPageNumber(Number(this.value))"`)+
-        `<label for="pageInput">enter page(1-${Math.min(500,data.total_pages)})</label>`
-    )
-
-    const changePageControls=getTextInTagWithAtt('div','class="input-group align-self-start w-25 "',
-        getTextInTagWithAtt('button',`class="bi btn btn-primary bi-chevron-left " ${data.page==1?'disabled':'onclick="switchPageNumberBy1(false)"'} id="pageLeft"`)+
-        pageInputGroup+
-        getTextInTagWithAtt('button',`class="bi btn btn-primary bi-chevron-right " ${data.page>=Math.min(500,data.total_pages)?'disabled':'onclick="switchPageNumberBy1(true)"'} id="pageRight"`)
-    )
-
+    const changePageControls= getPagination(data.page,data.total_pages)
 
     
-    pageScrollElem.innerHTML= getTextInTag('p',`results: ${getNumberInTotal(data.page)+1}-${Math.min(getNumberInTotal(data.page+1),data.total_results)} `)+
-    getTextInTag('p',`possible results: ${Math.min(10000,data.total_results)}`)+
-    getTextInTag('p',`total pages: ${Math.min(500,data.total_pages)}`)+
+    pageScrollElem.innerHTML=getPageData(data.page,data.total_results,data.total_pages) +
     changePageControls
+
+    eventsToPagination()
+}
+
+
+
+function eventsToPagination(currPage){
+    document.getElementById('pageInput').addEventListener('change',switchPageNumberToInput)
+    if(currPage>=500){
+        document.getElementById('pageRight').disabled=true
+    }
+    else{
+        document.getElementById('pageRight').addEventListener('click',()=>{switchPageNumberBy1(true)})
+    }
+    if(currPage==1){
+        document.getElementById('pageLeft').disabled=true
+    }
+    else{
+        document.getElementById('pageLeft').addEventListener('click',()=>{switchPageNumberBy1(false)})
+    }
 }
 
 function switchPageNumberBy1(negPosBool){
     switchPageNumber(Number(document.getElementById('pageInput').value)+(negPosBool?1:-1))
 }
+function switchPageNumberToInput(){
+    switchPageNumber(document.getElementById('pageInput').value)
+}
 
 function switchPageNumber(newPageNumber){
     loadPage(newPageNumber)
-}
-
-function getNumberInTotal(numberOfPage){
-    return 20*(numberOfPage-1);
 }
 
 
@@ -87,15 +83,20 @@ function movieToHtml(movieObj,movieNumber){
             getTextInTag('div', translateGenreArr(movieObj.genre_ids))
     );
     const singlePageButton= getTextInTagWithAtt('button',`onclick=singlePageDirect(${movieObj.id})`,'More Info')
+    const favouriteButton=getFavouriteButton(movieObj.id)
 
     let content= getTextInTagWithAtt('img',`src="${imagePath+movieObj.poster_path}" class='posterImage'`)+
     mainTitleBox+
     getTextInTagWithAtt('div','class="desciptionMovie"',movieObj.overview)
-    +singlePageButton;
+    +singlePageButton+
+    favouriteButton;
 
     return getTextInTagWithAtt('div','class="movieCard"',content)
 
 }
+
+
+
 
 function singlePageDirect(movieId){
     localStorage.movieID=movieId;
@@ -145,6 +146,13 @@ fetch('https://api.themoviedb.org/3/genre/movie/list?language=en', options)
 ;
 
 let currentSearch='';
+
+window.changeFavourite = changeFavourite;
+window.singlePageDirect=singlePageDirect;
+
+if (!(checkFavArrExists())){
+    setFavouritesArr([])
+}
 
 initialEnter()
 
