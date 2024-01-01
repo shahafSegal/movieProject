@@ -46,7 +46,7 @@ function createPagination(data,dayToggle){
 
     eventsToPagination(data)
 
-    document.getElementById('timeControl').addEventListener('change',switchPageNumberToInput)
+    document.getElementById('timeCon').addEventListener('change',switchPageNumberToInput)
     
 }
 //bottomBar
@@ -75,7 +75,7 @@ function switchPageNumberToInput(){
 }
 
 function switchPageNumber(newPageNumber){
-    loadPage(newPageNumber,document.getElementById('timeControl').checked)
+    loadPage(newPageNumber,document.getElementById('timeCon').checked)
 }
 
 //<------------------------------------------------------------->
@@ -103,7 +103,7 @@ function movieToHtml(movieObj,movieNumber){
 function singlePageDirect(movieId){
     localStorage.movieID=movieId;
     localStorage.enterLastPage=true;
-    location.href='./moviePage.html'
+    location.href='./pages/moviePage.html'
 
 }
 //genre
