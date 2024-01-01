@@ -101,7 +101,7 @@ function movieToHtml(movieObj,movieNumber){
 function singlePageDirect(movieId){
     localStorage.movieID=movieId;
     localStorage.enterLastPage=true;
-    location.href='../pages/moviePage.html'
+    location.href='./moviePage.html'
 
 }
 
