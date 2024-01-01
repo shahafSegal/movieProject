@@ -1,6 +1,5 @@
-// const stylesheet = document.getElementById('stylesheet');
 
-// let isStylesheet1Active = true;
+let isStylesheet1Active = true;
 $(function() {
     //load the header into the document
     $.get('../commonParts/header.html', function(data) {
@@ -10,21 +9,22 @@ $(function() {
         $('#header-paragraph').text(pageTitle);
 
 
-        //dark/ light mode button
-        // var switchButton = document.getElementById('themeSwButton');
-        // if (switchButton){
-
-        //     switchButton.addEventListener('click', () => {
-        //         if (isStylesheet1Active) {
-        //             stylesheet.href = 'css/lightStyle.css';
-        //             switchButton.textContent="switch to dark mode"
-        //         } else {
-        //             stylesheet.href = 'css/darkStyle.css';
-        //             switchButton.textContent="switch to light mode"
-        //         }
-        //         isStylesheet1Active = !isStylesheet1Active;
-        //     });            
-        // }
+        // dark/ light mode button
+        var switchButton = document.getElementById('themeSwButton');
+        if (switchButton){
+            
+            switchButton.addEventListener('click', () => {
+                console.log('here');
+                if (isStylesheet1Active) {
+                    themeSheet.href = '../css/lightMode.css';
+                    switchButton.textContent="switch to dark mode"
+                } else {
+                    themeSheet.href = '../css/darkMode.css';
+                    switchButton.textContent="switch to light mode"
+                }
+                isStylesheet1Active = !isStylesheet1Active;
+            });            
+        }
 
         //activate the navPage you are in
         const anchors = document.getElementsByClassName("navPage");

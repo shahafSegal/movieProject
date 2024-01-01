@@ -36,7 +36,7 @@ function changeMoviePage(responseData,dayToggle){
 
 function createPagination(data,dayToggle){
 
-    const changePageControls=getPagination(data.page,data.total_pages)
+    const changePageControls=getPagination(data.page)
 
     const toggleElem= getTimeControl(dayToggle)
     

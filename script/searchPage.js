@@ -38,7 +38,7 @@ function changeMoviePage(responseData){
 
 function createPagination(data){
 
-    const changePageControls= getPagination(data.page,data.total_pages)
+    const changePageControls= getPagination(data.page)
 
     
     pageScrollElem.innerHTML=getPageData(data.page,data.total_results,data.total_pages) +

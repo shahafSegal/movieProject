@@ -1,0 +1,21 @@
+body{
+    background-color: grey
+}
+
+button{
+    background-color: #ea80fc;
+}
+.movieCard{
+    color: aqua;
+    background-color: #202124
+}
+#pageScroll{
+    color: aquamarine;
+    background-color: black;
+}
+
+#pageInput{
+    border-color: #2b2b2b;
+    background-color: #2b2b2b;
+    color: gold;
+}
