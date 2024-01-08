@@ -1,0 +1,39 @@
+body{
+    background-color: #FFFDD0;
+    color: #4069b6
+}
+header{
+    background-color: #B68D40;
+    color:#FFFDD0
+}
+h3,h4, .miniHeader{
+    color: #ff7300;
+}
+footer{
+    background-color: #D6AD60;
+    color: #5240b6;
+}
+
+table {
+    border: 2px solid #5240b6; 
+  }
+  
+  td, th {
+    border: 1px solid #5240b6; 
+  }
+
+a,span{
+    color: #b64069;
+}
+
+
+#pageScroll{
+    background-color: #D6AD60;
+    color: #5240b6;
+}
+
+#pageInput{
+    border-color: #2b2b2b;
+    background-color: #B68D40;
+    color:#FFFDD0
+}

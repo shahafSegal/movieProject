@@ -1,5 +1,6 @@
 body{
-    background-color: grey
+    background-color: grey;
+    color: #ffd700;
 }
 
 button{
@@ -9,6 +10,44 @@ button{
     color: aqua;
     background-color: #202124
 }
+article h1{
+    color: orange;
+}
+article p{
+    color: yellow;
+}
+
+
+header{
+    background-color: #373741;
+    color:#ffd700
+}
+
+h3,h4, .miniHeader{
+    color: #ff7300;
+}
+
+footer{
+    background-color: #5d5d6d;
+    color: #6a9955;
+}
+
+table {
+    border: 2px solid #456338; 
+  }
+  
+  td, th {
+    border: 1px solid #456338; 
+  }
+
+a,span{
+    
+
+    color: #1fada1;
+
+}
+
+
 #pageScroll{
     color: aquamarine;
     background-color: black;

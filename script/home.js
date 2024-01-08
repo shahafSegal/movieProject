@@ -82,7 +82,7 @@ function switchPageNumber(newPageNumber){
 
 function movieToHtml(movieObj,movieNumber){
     const mainTitleBox =getTextInTagWithAtt('div','class="titleCard"', 
-            getTextInTag('h3',`${movieNumber}.  ${movieObj.title}`)+
+            getTextInTag(movieObj.title.length>20?'h4':'h3',`${movieNumber}.  ${movieObj.title}`)+
             getTextInTag('div', translateGenreArr(movieObj.genre_ids))
     );
     const singlePageButton= getTextInTagWithAtt('button',`onclick=singlePageDirect(${movieObj.id})`,'More Info')
@@ -103,7 +103,7 @@ function movieToHtml(movieObj,movieNumber){
 function singlePageDirect(movieId){
     localStorage.movieID=movieId;
     localStorage.enterLastPage=true;
-    location.href='./pages/moviePage.html'
+    location.href='./moviePage.html'
 
 }
 //genre
