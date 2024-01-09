@@ -19,7 +19,7 @@ body{
 
 #common-header{
     text-align: center;
-    position: fixed;
+    position: sticky;
     top: 0;
     left: 4vw;
     width: 92vw;
